@@ -1,24 +1,23 @@
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { Problem } from './components/Problem';
-import { Solution } from './components/Solution';
-import { Advantage } from './components/Advantage';
-import { Diagnostic } from './components/Diagnostic';
-import { Readiness } from './components/Readiness';
-import { Footer } from './components/Footer';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Landing from './pages/Landing/Landing';
+import Contact from './pages/Contact/Contact';
+
+import Assessment from './pages/Assessment/Assessment';
+
+import { ScrollToTop } from './components/ScrollToTop';
 
 function App() {
     return (
-        <div className="min-h-screen bg-white font-sans text-black selection:bg-accent-red selection:text-white">
-            <Navbar />
-            <Hero />
-            <Problem />
-            <Solution />
-            <Advantage />
-            <Diagnostic />
-            <Readiness />
-            <Footer />
-        </div>
+        <Router>
+            <ScrollToTop />
+            <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/assessment" element={<Assessment />} />
+                {/* Fallback to landing */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </Router>
     );
 }
 

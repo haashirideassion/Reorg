@@ -1,8 +1,8 @@
-import { Reveal } from './Reveal';
+import { Reveal } from '../../components/Reveal';
 
 export function Readiness() {
     return (
-        <section className="py-40 bg-white text-black px-6 lg:px-8 text-center border-b border-gray-100">
+        <section className="py-20 md:py-24 bg-white text-black px-6 lg:px-8 text-center border-b border-gray-100">
             <Reveal className="max-w-4xl mx-auto">
                 <h2 className="text-5xl sm:text-6xl font-serif font-medium mb-10 leading-tight">
                     The 48-Hour Test.
