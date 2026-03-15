@@ -53,7 +53,7 @@ export function Problem() {
                                         }}
                                         className="glow-card h-full bg-white border border-gray-100 p-10 transition-all duration-500 hover:border-accent-red/30 hover:shadow-2xl hover:shadow-accent-red/5 relative z-10"
                                     >
-                                        <div className="w-16 h-16 bg-zinc-50 border border-gray-100 flex items-center justify-center text-black mb-8 group-hover:bg-black group-hover:text-white transition-all duration-300 rounded-xl">
+                                        <div className="w-16 h-16 bg-zinc-50 border border-gray-100 flex items-center justify-center text-black mb-8 group-hover:bg-accent-red group-hover:text-white transition-all duration-300 rounded-xl">
                                             {problem.icon}
                                         </div>
                                         <h3 className="text-xl font-bold font-sans mb-4 uppercase tracking-wider text-black">{problem.title}</h3>

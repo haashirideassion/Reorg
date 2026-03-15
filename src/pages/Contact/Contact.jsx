@@ -31,13 +31,12 @@ export default function Contact() {
     return (
         <div className="min-h-screen bg-white text-black font-sans premium-gradient">
             <Navbar />
-            {/* noise texture */}
             <div className="fixed inset-0 noise-bg z-0 pointer-events-none"></div>
 
-            {/* Header / Hero Section */}
-            <section className="bg-white text-black pt-48 pb-20 px-6 lg:px-8 relative overflow-hidden border-b border-gray-100">
-                <div className="absolute inset-0 opacity-40 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zOSA0MHYtNDBtLTQwIDM5aDQwIiBzdHJva2U9InJnYmEoMCwwLDAsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')] z-0"></div>
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/5 rounded-full blur-[120px] z-0"></div>
+            <section className="bg-white text-black pt-24 sm:pt-48 pb-20 px-4 sm:px-8 lg:px-12 relative overflow-x-hidden border-b border-gray-100">
+                <div className="absolute inset-0 opacity-40 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PHBhdGggZD0iTTAgMGg0MHY0MEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0zOSA0MHYtNDBtLTQwIDM5aDQwIiBzdHJva2U9InJnYmEoMCwwLDAsMC4wNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"></div>
+                {/* Abstract Glow shape */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent-red/5 rounded-full blur-3xl z-0"></div>
 
                 <div className="max-w-7xl mx-auto relative z-10">
                     <Reveal>
@@ -49,7 +48,7 @@ export default function Contact() {
                 </div>
             </section>
 
-            <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
+            <section className="py-16 sm:py-24 px-4 sm:px-8 lg:px-12 max-w-7xl mx-auto relative z-10 overflow-x-hidden">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
 
                     {/* Contact Form */}
@@ -110,7 +109,7 @@ export default function Contact() {
 
                                 <button
                                     type="submit"
-                                    className="w-full flex items-center justify-center bg-black text-white py-5 font-bold uppercase tracking-widest text-sm hover:bg-accent-red transition-all duration-300 group"
+                                    className="w-full flex items-center justify-center btn-border-flow text-black py-5 font-bold uppercase tracking-widest text-sm shadow-xl group"
                                 >
                                     Send Message
                                     <Send className="w-4 h-4 ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

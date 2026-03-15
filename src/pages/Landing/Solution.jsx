@@ -45,7 +45,7 @@ export function Solution() {
                                         e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
                                         e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
                                     }}
-                                    className={`glow-card w-full max-w-sm bg-white border border-gray-100 p-8 hover:border-black/20 hover:shadow-2xl hover:shadow-black/5 transition-all duration-500 flex flex-col items-center text-center group-hover:-translate-y-2 z-10 ${idx % 2 === 0 ? 'lg:mb-32 lg:mt-0' : 'lg:mt-32 lg:mb-0'}`}
+                                    className={`glow-card w-full max-w-sm bg-white border border-gray-100 p-8 hover:border-accent-red/30 hover:shadow-2xl hover:shadow-accent-red/5 transition-all duration-500 flex flex-col items-center text-center group-hover:-translate-y-2 z-10 ${idx % 2 === 0 ? 'lg:mb-32 lg:mt-0' : 'lg:mt-32 lg:mb-0'}`}
                                 >
                                     <h3 className="flex items-baseline justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
                                         <span className="text-5xl sm:text-6xl font-serif font-bold text-accent-red leading-none mr-0.5">

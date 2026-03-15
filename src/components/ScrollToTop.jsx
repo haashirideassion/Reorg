@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 
 export function ScrollToTop() {
     const { pathname } = useLocation();
+    const navType = useNavigationType();
 
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [pathname]);
+        // Only scroll to top on PUSH (new link click) or REPLACE actions.
+        // On POP (back/forward button), let the browser or React Router handle restoration.
+        if (navType !== 'POP') {
+            window.scrollTo(0, 0);
+        }
+    }, [pathname, navType]);
 
     return null;
 }

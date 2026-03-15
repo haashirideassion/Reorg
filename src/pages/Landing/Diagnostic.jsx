@@ -50,8 +50,8 @@ export function Diagnostic() {
                         </p>
 
                         <Link
-                            to="/assessment"
-                            className="inline-flex items-center px-8 py-4 bg-black text-white hover:bg-accent-red font-bold tracking-wide uppercase text-sm transition-all duration-300"
+                            to="/diagnostic"
+                            className="inline-flex items-center px-8 py-4 btn-border-flow text-black font-bold tracking-wide uppercase text-sm shadow-xl transition-all duration-300"
                         >
                             Start Diagnostic
                             <ArrowRight className="w-5 h-5 ml-2" />

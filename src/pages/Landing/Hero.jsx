@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Reveal } from '../../components/Reveal';
 import { ArrowRight } from 'lucide-react';
 
@@ -66,14 +67,13 @@ export function Hero() {
                 </Reveal>
 
                 <Reveal delay={0.4}>
-                    <a
-                        href="#diagnostic"
-                        onClick={handleSlowScroll}
-                        className="inline-flex items-center justify-center px-10 py-5 rounded-none font-bold text-lg bg-black text-white hover:bg-accent-red transition-colors duration-300 group cursor-pointer border border-transparent hover:border-accent-red"
+                    <Link
+                        to="/assessment"
+                        className="inline-flex items-center justify-center px-10 py-5 rounded-none font-bold text-lg btn-border-flow text-black shadow-2xl group cursor-pointer"
                     >
                         <span className="mr-3 tracking-wide uppercase text-sm">Take the RE:ORG Readiness Assessment</span>
                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </a>
+                    </Link>
                 </Reveal>
             </div>
         </header>
