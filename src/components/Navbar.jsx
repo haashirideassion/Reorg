@@ -38,25 +38,23 @@ export function Navbar() {
                 <Link
                     to="/"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 md:gap-4 hover:opacity-80 transition-opacity relative z-10"
+                    className="flex items-center gap-2 sm:gap-3 lg:gap-4 transition-opacity relative z-10"
                 >
-                    <img src="/sapienthr.png" alt="SapientHR Logo" className="h-6 sm:h-8 object-contain" />
-                    <div className="h-6 sm:h-8 w-px bg-gray-300"></div>
-                    <div className="font-serif font-bold text-xl sm:text-2xl tracking-wide">
-                        RE:ORG<span className="text-gray-400 font-sans text-xs sm:text-sm font-normal tracking-normal ml-1 hidden sm:inline">.consulting</span>
-                    </div>
+                    <img src="/sapienthr.png" alt="SapientHR Logo" className="h-5 sm:h-6 lg:h-8 object-contain" />
+                    <div className="h-4 sm:h-6 lg:h-8 w-px bg-gray-300"></div>
+                    <img src="/reorg-logo.svg" alt="RE:ORG Logo" className="h-5 sm:h-6 lg:h-8 object-contain" />
                 </Link>
 
                 {/* Desktop Links */}
-                <div className="hidden md:flex items-center gap-6 lg:gap-8 text-sm font-medium">
+                <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium">
                     {navLinks.map(link => (
-                        <a key={link.name} href={link.href} className="hover:text-amber-600 transition-colors">
+                        <a key={link.name} href={link.href} className="hover:text-amber-600 transition-colors whitespace-nowrap">
                             {link.name}
                         </a>
                     ))}
                     <Link
                         to="/contact"
-                        className="px-6 py-2.5 rounded-full font-semibold transition-all duration-300 btn-amber-green text-white shadow-lg"
+                        className="px-6 py-2.5 rounded-full font-semibold transition-all duration-300 btn-amber-green text-white shadow-lg whitespace-nowrap"
                     >
                         Contact
                     </Link>
@@ -64,7 +62,7 @@ export function Navbar() {
 
                 {/* Mobile Toggle */}
                 <button
-                    className="md:hidden p-2 relative z-10"
+                    className="lg:hidden p-2 relative z-10"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -78,15 +76,15 @@ export function Navbar() {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-white border-b border-gray-100 overflow-hidden"
+                        className="lg:hidden bg-white/95 backdrop-blur-md border-b border-gray-100 overflow-hidden shadow-xl"
                     >
-                        <div className="px-6 py-8 flex flex-col gap-6 text-lg font-medium">
+                        <div className="px-6 py-10 flex flex-col gap-8 text-lg font-medium">
                             {navLinks.map(link => (
                                 <a
                                     key={link.name}
                                     href={link.href}
                                     onClick={() => setIsOpen(false)}
-                                    className="hover:text-amber-600 transition-colors"
+                                    className="hover:text-amber-600 transition-colors border-l-2 border-transparent hover:border-amber-600 pl-4"
                                 >
                                     {link.name}
                                 </a>
@@ -94,7 +92,7 @@ export function Navbar() {
                             <Link
                                 to="/contact"
                                 onClick={() => setIsOpen(false)}
-                                className="px-6 py-4 rounded-xl text-center font-bold bg-black text-white shadow-lg"
+                                className="px-6 py-4 rounded-2xl text-center font-bold btn-amber-green text-white shadow-xl mx-4"
                             >
                                 Contact
                             </Link>

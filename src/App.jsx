@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Landing from './pages/Landing/Landing';
 import Contact from './pages/Contact/Contact';
 
-import Assessment from './pages/Assessment/Assessment';
+import DiagnosticAssessment from './pages/Assessment/DiagnosticAssessment';
 import ReadinessAssessment from './pages/Assessment/ReadinessAssessment';
 
 import { ScrollToTop } from './components/ScrollToTop';
@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/diagnostic" element={<Assessment />} />
+                <Route path="/diagnostic" element={<DiagnosticAssessment />} />
                 <Route path="/assessment" element={<ReadinessAssessment />} />
                 {/* Fallback to landing */}
                 <Route path="*" element={<Navigate to="/" replace />} />
