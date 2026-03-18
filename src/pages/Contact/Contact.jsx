@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock, Send, ArrowLeft } from 'lucide-react';
 import { Reveal } from '../../components/Reveal';
 import { Link } from 'react-router-dom';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
+import { supabase } from '../../utils/supabaseClient';
+import { cn } from '../../utils/cn';
 
 export default function Contact() {
     const [formState, setFormState] = useState({
@@ -14,11 +16,41 @@ export default function Contact() {
         message: ''
     });
 
-    const handleSubmit = (e) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error' | null
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Logic for form submission would go here (e.g., Axios call to your Strapi backend)
-        console.log('Form Submitted:', formState);
-        alert('Thank you for your inquiry. The SapientHR RE:ORG team will contact you shortly.');
+        setIsSubmitting(true);
+        setSubmitStatus(null);
+        setErrorMessage('');
+
+        try {
+            const { error } = await supabase
+                .from('contact_inquiries')
+                .insert([
+                    {
+                        first_name: formState.firstName,
+                        last_name: formState.lastName,
+                        email: formState.email,
+                        message: formState.message
+                    }
+                ]);
+
+            if (error) throw error;
+
+            setSubmitStatus('success');
+            setFormState({ firstName: '', lastName: '', email: '', message: '' });
+            // Clear success message after 5 seconds
+            setTimeout(() => setSubmitStatus(null), 5000);
+        } catch (error) {
+            console.error('Form Submission Error:', error);
+            setSubmitStatus('error');
+            setErrorMessage('Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e) => {
@@ -107,11 +139,38 @@ export default function Contact() {
                                     ></textarea>
                                 </div>
 
+                                <AnimatePresence>
+                                    {submitStatus && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            className={cn(
+                                                "p-4 text-sm font-medium border rounded-xl",
+                                                submitStatus === 'success'
+                                                    ? "bg-green-50 border-green-100 text-green-700"
+                                                    : "bg-red-50 border-red-100 text-red-700"
+                                            )}
+                                            role="alert"
+                                        >
+                                            {submitStatus === 'success' ? (
+                                                <p>Thank you for your inquiry. The SapientHR RE:ORG team will contact you shortly.</p>
+                                            ) : (
+                                                <p>{errorMessage}</p>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
                                 <button
                                     type="submit"
-                                    className="w-full flex items-center justify-center btn-border-flow text-black py-5 font-bold uppercase tracking-widest text-sm shadow-xl group"
+                                    disabled={isSubmitting}
+                                    className={cn(
+                                        "w-full flex items-center justify-center btn-border-flow text-black py-5 font-bold uppercase tracking-widest text-sm shadow-xl group",
+                                        isSubmitting && "opacity-50 cursor-not-allowed"
+                                    )}
                                 >
-                                    Send Message
+                                    {isSubmitting ? 'Sending...' : 'Send Message'}
                                     <Send className="w-4 h-4 ml-3 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                 </button>
                             </form>

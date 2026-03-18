@@ -20,7 +20,7 @@ const ReadinessScorecardPDF = ({ userData, overallStatus, totalScore, sections, 
 
             {/* Hero Section */}
             <div style={{
-                border: `2px solid #22c55e`,
+                border: `2px solid ${overallStatus.hexColor}`,
                 borderRadius: '20px',
                 marginBottom: '40px',
                 overflow: 'hidden',
@@ -41,12 +41,12 @@ const ReadinessScorecardPDF = ({ userData, overallStatus, totalScore, sections, 
                             <div style={{
                                 fontSize: '48px',
                                 fontWeight: 'bold',
-                                color: '#22c55e'
+                                color: overallStatus.hexColor
                             }}>
                                 {totalScore}<span style={{ fontSize: '18px', color: '#9ca3af' }}>/100</span>
                             </div>
                         </div>
-                        <h2 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold', color: '#166534' }}>{overallStatus.label}</h2>
+                        <h2 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold' }}>{overallStatus.label}</h2>
                         <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', margin: '0 0 15px 0' }}>{overallStatus.zone}</p>
                         <p style={{ fontSize: '14px', color: '#4b5563', margin: '0' }}>{overallStatus.desc}</p>
                     </div>
@@ -81,9 +81,9 @@ const ReadinessScorecardPDF = ({ userData, overallStatus, totalScore, sections, 
                                 })}
                                 <polygon
                                     points={radarPoints}
-                                    fill="#22c55e"
+                                    fill={overallStatus.hexColor}
                                     fillOpacity="0.3"
-                                    stroke="#15803d"
+                                    stroke={overallStatus.hexColor}
                                     strokeWidth="2"
                                 />
                             </svg>

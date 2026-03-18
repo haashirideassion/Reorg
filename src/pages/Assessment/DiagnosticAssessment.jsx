@@ -8,6 +8,7 @@ import { cn } from '../../utils/cn';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import ScorecardPDF from '../../components/ScorecardPDF';
+import { supabase } from '../../utils/supabaseClient';
 
 const sections = [
     {
@@ -103,15 +104,60 @@ export default function DiagnosticAssessment() {
     }, [answers, activeSection, userData]);
 
     const [showLeadForm, setShowLeadForm] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const [validationErrors, setValidationErrors] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [showResetConfirm, setShowResetConfirm] = useState(false);
 
+    const [formError, setFormError] = useState('');
+    const [pdfError, setPdfError] = useState('');
+
     const questionRefs = useRef([]);
     const resultRef = useRef(null);
     const pdfRef = useRef(null);
     const dropdownRef = useRef(null);
+
+    const validateEmail = (email) => {
+        return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+    };
+
+    const handleReportView = async () => {
+        if (!userData.name || !userData.email) return;
+        setFormError('');
+
+        if (!validateEmail(userData.email)) {
+            setFormError('Please enter a valid business email address.');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const { error } = await supabase
+                .from('diagnostic_submissions')
+                .insert([
+                    {
+                        name: userData.name,
+                        email: userData.email,
+                        total_score: totalScore,
+                        status: overallStatus.label,
+                        answers: answers
+                    }
+                ]);
+
+            if (error) throw error;
+            setShowResult(true);
+        } catch (error) {
+            console.error('Error saving diagnostic result:', error);
+            setFormError('Something went wrong while saving your assessment. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     // Close dropdown on click outside
     useEffect(() => {
@@ -275,7 +321,8 @@ export default function DiagnosticAssessment() {
             pdf.save(`reorg-diagnostic-${safeName}.pdf`);
         } catch (error) {
             console.error("PDF download failed:", error);
-            alert("Sorry, we couldn't generate the PDF. Please try again.");
+            setPdfError("Sorry, we couldn't generate the PDF. Please try again.");
+            setTimeout(() => setPdfError(''), 5000);
         }
     };
 
@@ -428,6 +475,19 @@ export default function DiagnosticAssessment() {
                     </div>
 
                     <div className="max-w-4xl mx-auto mt-16 space-y-8">
+                        <AnimatePresence>
+                            {pdfError && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="bg-red-50 border border-red-100 text-red-600 px-6 py-4 rounded-2xl flex items-center justify-center gap-3 text-sm font-bold uppercase tracking-widest mb-6"
+                                    role="alert"
+                                >
+                                    <AlertCircle className="w-5 h-5" /> {pdfError}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                         <div className="flex flex-col md:flex-row gap-4 justify-center pt-12">
                             <button
                                 onClick={downloadPDF}
@@ -502,15 +562,32 @@ export default function DiagnosticAssessment() {
                                 </div>
                             </div>
 
+                            <AnimatePresence>
+                                {formError && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="text-red-500 text-[10px] font-bold uppercase tracking-widest text-left mt-2 flex items-center gap-2"
+                                        role="alert"
+                                    >
+                                        <AlertCircle className="w-3 h-3" /> {formError}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+
                             <button
-                                onClick={() => (userData.name && userData.email) && setShowResult(true)}
-                                disabled={!userData.name || !userData.email}
+                                onClick={handleReportView}
+                                disabled={!userData.name || !userData.email || isSaving}
                                 className={cn(
                                     "w-full py-5 font-bold uppercase tracking-widest text-sm mt-4 flex items-center justify-center gap-3 transition-all",
-                                    (userData.name && userData.email) ? "btn-border-flow text-black shadow-xl" : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                    (userData.name && userData.email && !isSaving)
+                                        ? "btn-border-flow text-black shadow-xl"
+                                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
                                 )}
                             >
-                                View Detailed Report <Send className="w-4 h-4" />
+                                {isSaving ? 'Processing...' : 'View Detailed Report'}
+                                <Send className="w-4 h-4" />
                             </button>
                         </div>
                     </div>
