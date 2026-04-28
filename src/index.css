@@ -485,7 +485,7 @@
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 2rem !important;
-    align-items: start !important;
+    align-items: center !important;
   }
 
   /* Clog Detector bars: Vivid Colors */
@@ -516,11 +516,11 @@
   }
 
   /* Question rows */
-  .flex.justify-between.items-start.gap-8 {
+  .flex.justify-between.items-center.gap-8 {
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     padding: 1rem !important;
     border-radius: 12px !important;
     margin-bottom: 0.5rem !important;

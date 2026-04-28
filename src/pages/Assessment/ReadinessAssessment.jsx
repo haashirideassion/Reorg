@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
+import { Reveal } from '../../components/Reveal';
 import { ArrowRight, ArrowLeft, CheckCircle2, Activity, BarChart3, HelpCircle, Download, Send, User, Mail, AlertCircle, X, Shield, Zap, RefreshCw } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { jsPDF } from 'jspdf';
@@ -133,6 +135,7 @@ const sections = [
 
 
 export default function ReadinessAssessment() {
+    const navigate = useNavigate();
     const totalQuestions = sections.reduce((acc, s) => acc + s.questions.length, 0);
 
     // Initialize state from sessionStorage
@@ -358,6 +361,8 @@ export default function ReadinessAssessment() {
                         clonedWrapper.style.left = '0';
                         clonedWrapper.style.opacity = '1';
                         clonedWrapper.style.width = '794px';
+                        clonedWrapper.style.height = 'auto';
+                        clonedWrapper.style.overflow = 'visible';
                         clonedDoc.body.style.width = '794px';
                     }
                 }
@@ -365,21 +370,32 @@ export default function ReadinessAssessment() {
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgWidth = 210;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-
-            // Handle multi-page if necessary
+            const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            let heightLeft = imgHeight - pdfHeight;
-            let position = -pdfHeight;
+            const margin = 15;
+            const contentHeight = pdfHeight - (margin * 2); // 267mm for A4
+            
+            const imgWidth = pdfWidth;
+            const imgHeightInPdf = (canvas.height * imgWidth) / canvas.width;
+            
+            let heightLeft = imgHeightInPdf;
+            let position = 0; // The current scroll position in the image
 
             while (heightLeft > 0) {
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pdfHeight;
-                position -= pdfHeight;
+                if (position !== 0) {
+                    pdf.addPage();
+                }
+                
+                // Add the full image with a negative offset to "scroll" it
+                pdf.addImage(imgData, 'JPEG', 0, margin - position, imgWidth, imgHeightInPdf);
+                
+                // Mask the margins with white rectangles to prevent bleed and overlap
+                pdf.setFillColor(255, 255, 255);
+                pdf.rect(0, 0, pdfWidth, margin, 'F'); // Top margin
+                pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F'); // Bottom margin
+                
+                heightLeft -= contentHeight;
+                position += contentHeight;
             }
 
             const safeName = userData.name ? userData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'profile';
@@ -464,65 +480,89 @@ export default function ReadinessAssessment() {
                                 </div>
                             </div>
 
-                            <div className="space-y-8">
-                                <h3 className="text-2xl font-serif text-center">Organizational Breakdown</h3>
+                            <div className="space-y-12">
+                                <Reveal>
+                                    <h3 className="text-3xl font-serif text-center mb-8">Organizational Breakdown</h3>
+                                </Reveal>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                     {sections.map((section, idx) => (
-                                        <div key={idx} className="glass p-8 rounded-3xl relative">
-                                            <div className="flex justify-between items-end mb-4">
-                                                <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 max-w-[120px]">{section.title}</h4>
-                                                <span className="text-2xl font-serif">{Math.round(readiness.sectionScores[idx])}%</span>
+                                        <motion.div 
+                                            key={idx} 
+                                            initial={{ opacity: 0, y: 30 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: idx * 0.1 }}
+                                            className="group glass p-8 rounded-[32px] relative overflow-hidden hover:shadow-2xl transition-all duration-500 border border-white/40"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <div className="relative z-10 h-full flex flex-col">
+                                                <div className="flex flex-col gap-1 mb-6">
+                                                    <div className="flex justify-between items-center">
+                                                        <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-500 leading-tight pr-4">{section.title}</h4>
+                                                        <span className="text-3xl font-serif font-light shrink-0">{Math.round(readiness.sectionScores[idx])}%</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        {readiness.sectionScores[idx] > 60 ? (
+                                                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                                        ) : readiness.sectionScores[idx] > 30 ? (
+                                                            <span className="w-2 h-2 rounded-full bg-amber-500" />
+                                                        ) : (
+                                                            <span className="w-2 h-2 rounded-full bg-green-500" />
+                                                        )}
+                                                        <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">
+                                                            {readiness.sectionScores[idx] > 60 ? "Critical Resistance" :
+                                                                readiness.sectionScores[idx] > 30 ? "Transition Strain" : "Stable Flow"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="relative h-3 w-full bg-gray-100/80 rounded-full overflow-hidden mb-6 backdrop-blur-sm shadow-inner">
+                                                    <motion.div
+                                                        initial={{ width: 0 }}
+                                                        whileInView={{ width: `${readiness.sectionScores[idx]}%` }}
+                                                        viewport={{ once: true }}
+                                                        transition={{ duration: 1.5, ease: "circOut" }}
+                                                        className={cn(
+                                                            "h-full rounded-full relative",
+                                                            readiness.sectionScores[idx] > 60 ? "bg-red-500" :
+                                                                readiness.sectionScores[idx] > 30 ? "bg-amber-500" : "bg-green-500"
+                                                        )}
+                                                    >
+                                                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer" />
+                                                    </motion.div>
+                                                </div>
+
+                                                <p className="text-[11px] text-gray-500 leading-relaxed font-light italic mt-auto">
+                                                    {readiness.sectionScores[idx] > 60 ? "Deep organizational friction detected. Legacy patterns are stifling progress." :
+                                                        readiness.sectionScores[idx] > 30 ? "Moderate signs of structural tension. Opportunities for optimization exist." : "Operational fluidity is high. Structure supports strategic execution."}
+                                                </p>
                                             </div>
-                                            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: `${readiness.sectionScores[idx]}%` }}
-                                                    className={cn(
-                                                        "h-full rounded-full",
-                                                        readiness.sectionScores[idx] > 60 ? "bg-red-500" :
-                                                            readiness.sectionScores[idx] > 30 ? "bg-amber-500" : "bg-green-500"
-                                                    )}
-                                                />
-                                            </div>
-                                            <div className="mt-4 flex items-center gap-2">
-                                                {readiness.sectionScores[idx] > 60 ? (
-                                                    <AlertCircle className="w-4 h-4 text-red-500" />
-                                                ) : readiness.sectionScores[idx] > 30 ? (
-                                                    <Activity className="w-4 h-4 text-amber-500" />
-                                                ) : (
-                                                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                                )}
-                                                <span className="text-[9px] uppercase tracking-tighter text-gray-500">
-                                                    {readiness.sectionScores[idx] > 60 ? "Critical Resistance" :
-                                                        readiness.sectionScores[idx] > 30 ? "Transition Strain" : "Stable Flow"}
-                                                </span>
-                                            </div>
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="glass p-8 rounded-3xl text-center border-b-4 border-green-400">
-                                    <div className="w-12 h-12 mx-auto mb-4 bg-green-50 rounded-2xl flex items-center justify-center">
-                                        <div className="w-6 h-6 bg-green-400 rounded-full" />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                                <div className="glass p-6 rounded-[24px] text-center border-b-4 border-green-500/50 shadow-sm">
+                                    <div className="w-10 h-10 mx-auto mb-3 bg-green-50 rounded-xl flex items-center justify-center">
+                                        <div className="w-5 h-5 bg-green-500 rounded-full" />
                                     </div>
-                                    <h3 className="font-bold uppercase tracking-widest text-[10px] text-gray-400 mb-2">Currently Stable</h3>
-                                    <p className="text-3xl font-serif">{readiness.colorCounts.green}</p>
+                                    <h3 className="font-bold uppercase tracking-widest text-[9px] text-gray-400 mb-1">Currently Stable</h3>
+                                    <p className="text-4xl font-serif">{readiness.colorCounts.green}</p>
                                 </div>
-                                <div className="glass p-8 rounded-3xl text-center border-b-4 border-amber-400">
-                                    <div className="w-12 h-12 mx-auto mb-4 bg-amber-50 rounded-2xl flex items-center justify-center">
-                                        <div className="w-6 h-6 bg-amber-400 rounded-full" />
+                                <div className="glass p-6 rounded-[24px] text-center border-b-4 border-amber-500/50 shadow-sm">
+                                    <div className="w-10 h-10 mx-auto mb-3 bg-amber-50 rounded-xl flex items-center justify-center">
+                                        <div className="w-5 h-5 bg-amber-500 rounded-full" />
                                     </div>
-                                    <h3 className="font-bold uppercase tracking-widest text-[10px] text-gray-400 mb-2">Needs Attention</h3>
-                                    <p className="text-3xl font-serif">{readiness.colorCounts.yellow}</p>
+                                    <h3 className="font-bold uppercase tracking-widest text-[9px] text-gray-400 mb-1">Needs Attention</h3>
+                                    <p className="text-4xl font-serif">{readiness.colorCounts.yellow}</p>
                                 </div>
-                                <div className="glass p-8 rounded-3xl text-center border-b-4 border-red-500">
-                                    <div className="w-12 h-12 mx-auto mb-4 bg-red-50 rounded-2xl flex items-center justify-center">
-                                        <div className="w-6 h-6 bg-red-500 rounded-full" />
+                                <div className="glass p-6 rounded-[24px] text-center border-b-4 border-red-500/50 shadow-sm">
+                                    <div className="w-10 h-10 mx-auto mb-3 bg-red-50 rounded-xl flex items-center justify-center">
+                                        <div className="w-5 h-5 bg-red-500 rounded-full" />
                                     </div>
-                                    <h3 className="font-bold uppercase tracking-widest text-[10px] text-gray-400 mb-2">Immediate Attention</h3>
-                                    <p className="text-3xl font-serif">{readiness.colorCounts.red}</p>
+                                    <h3 className="font-bold uppercase tracking-widest text-[9px] text-gray-400 mb-1">Immediate Attention</h3>
+                                    <p className="text-4xl font-serif">{readiness.colorCounts.red}</p>
                                 </div>
                             </div>
 
@@ -554,7 +594,7 @@ export default function ReadinessAssessment() {
                                     <RefreshCw className="w-4 h-4" /> Start New Assessment
                                 </button>
                                 <button
-                                    onClick={() => window.location.href = '/contact'}
+                                    onClick={() => navigate('/contact')}
                                     className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-green-600 text-white font-bold uppercase tracking-widest text-sm shadow-xl hover:bg-green-700 transition-colors rounded-full"
                                 >
                                     Discuss Your Results
@@ -564,7 +604,7 @@ export default function ReadinessAssessment() {
                     </div>
 
                     {/* Hidden PDF Template */}
-                    <div id="readiness-pdf-wrapper" style={{ position: 'absolute', left: '-9999px', top: '0', opacity: 0, height: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+                    <div id="readiness-pdf-wrapper" style={{ position: 'absolute', left: '-9999px', top: '0', pointerEvents: 'none', width: '794px', zIndex: -1 }}>
                         <div ref={pdfRef}>
                             <ReadinessScorecardPDF
                                 userData={userData}

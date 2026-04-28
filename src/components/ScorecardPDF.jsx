@@ -1,55 +1,59 @@
 import React from 'react';
+import PdfLogoHeader from './PdfLogoHeader';
 
 const ScorecardPDF = ({ userData, overallStatus, totalScore, sections, getSectionScore, getStatus, options, answers, radarPoints }) => {
     return (
         <div id="diagnostic-pdf-template" style={{
             width: '794px',
-            padding: '40px',
+            minHeight: '1120px',
+            padding: '40px 40px 100px 40px',
             backgroundColor: '#ffffff',
             color: '#000000',
             fontFamily: 'Arial, sans-serif',
             lineHeight: '1.5',
             margin: '0',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            position: 'relative'
         }}>
-            {/* Header */}
-            <div style={{ textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #f3f4f6', paddingBottom: '20px' }}>
-                <h1 style={{ fontSize: '28px', margin: '0 0 10px 0', fontWeight: 'bold' }}>RE:ORG Diagnostic Scorecard</h1>
-                <p style={{ fontSize: '16px', color: '#6b7280', fontStyle: 'italic', margin: '0' }}>Prepared for: {userData.name}</p>
-            </div>
+            <div style={{ height: '1010px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+                <PdfLogoHeader title="Diagnostic Scorecard" name={userData.name} />
 
-            {/* Hero Section */}
+                {/* Hero Section */}
             <div style={{
                 border: `2px solid ${overallStatus.borderColor.replace('border-', '')}`,
                 borderRadius: '20px',
                 marginBottom: '40px',
-                overflow: 'hidden',
-                display: 'table',
+                display: 'flex',
                 width: '100%',
-                pageBreakInside: 'avoid'
+                pageBreakInside: 'avoid',
+                backgroundColor: '#ffffff',
+                overflow: 'hidden'
             }}>
-                <div style={{ display: 'table-row' }}>
-                    <div style={{ display: 'table-cell', width: '260px', verticalAlign: 'middle', backgroundColor: '#f9fafb' }}>
-                        <img
-                            src={overallStatus.image}
-                            alt=""
-                            style={{ width: '260px', height: '260px', objectFit: 'cover' }}
-                        />
-                    </div>
-                    <div style={{ display: 'table-cell', padding: '30px', verticalAlign: 'middle', textAlign: 'center' }}>
-                        <div style={{ marginBottom: '20px' }}>
-                            <div style={{
-                                fontSize: '48px',
-                                fontWeight: 'bold',
-                                color: totalScore < 50 ? '#ef4444' : totalScore < 60 ? '#f59e0b' : '#22c55e'
-                            }}>
-                                {totalScore}<span style={{ fontSize: '18px', color: '#9ca3af' }}>/75</span>
-                            </div>
+                <div style={{ width: '260px', backgroundColor: '#f9fafb', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <img
+                        src={overallStatus.image}
+                        alt=""
+                        style={{ width: '260px', height: '260px', objectFit: 'cover', display: 'block' }}
+                    />
+                </div>
+                <div style={{ flex: 1, padding: '30px', display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center' }}>
+                    <div style={{ marginBottom: '20px' }}>
+                        <div style={{
+                            fontSize: '56px',
+                            fontWeight: '700',
+                            color: totalScore < 50 ? '#ef4444' : totalScore < 60 ? '#f59e0b' : '#22c55e',
+                            display: 'flex',
+                            alignItems: 'baseline',
+                            justifyContent: 'center',
+                            lineHeight: '1'
+                        }}>
+                            {totalScore}
+                            <span style={{ fontSize: '20px', color: '#9ca3af', marginLeft: '3px', fontWeight: '500' }}>/75</span>
                         </div>
-                        <h2 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold' }}>{overallStatus.label}</h2>
-                        <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', margin: '0 0 15px 0' }}>{overallStatus.zone}</p>
-                        <p style={{ fontSize: '14px', color: '#4b5563', margin: '0' }}>{overallStatus.desc}</p>
                     </div>
+                    <h2 style={{ fontSize: '24px', margin: '0 0 5px 0', fontWeight: 'bold', color: '#111827' }}>{overallStatus.label}</h2>
+                    <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#9ca3af', letterSpacing: '2px', textTransform: 'uppercase', margin: '0 0 15px 0' }}>{overallStatus.zone}</p>
+                    <p style={{ fontSize: '14px', color: '#4b5563', margin: '0', lineHeight: '1.5' }}>{overallStatus.desc}</p>
                 </div>
             </div>
 
@@ -112,63 +116,86 @@ const ScorecardPDF = ({ userData, overallStatus, totalScore, sections, getSectio
                                         </div>
                                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                             <span style={{ fontSize: '11px', color: '#9ca3af' }}>{status.sig}</span>
-                                            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{score}/15</span>
+                                            <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{score % 1 === 0 ? score : score.toFixed(1)}/15</span>
                                         </div>
                                     </div>
                                 );
                             })}
-                        </div>
                     </div>
                 </div>
             </div>
+            </div>
+            </div>
 
-            {/* Detailed Breakdown */}
-            <div style={{ marginTop: '40px', pageBreakBefore: 'always' }}>
+            {/* PAGE 2: Breakdown pt 1 */}
+            <div style={{ height: '1010px', boxSizing: 'border-box', paddingTop: '20px' }}>
                 <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '30px', borderBottom: '1px solid #000', paddingBottom: '10px' }}>
                     Detailed Diagnostic Breakdown
                 </h3>
 
-                {sections.map((sec) => (
-                    <div key={sec.id} style={{ marginBottom: '30px', pageBreakInside: 'avoid' }}>
-                        <h4 style={{ fontSize: '16px', fontWeight: 'bold', color: '#d97706', textTransform: 'uppercase', marginBottom: '15px', borderLeft: '4px solid #d97706', paddingLeft: '10px' }}>
+                {sections.slice(0, 2).map((sec) => (
+                    <div key={sec.id} style={{ marginBottom: '40px', pageBreakInside: 'avoid' }}>
+                        <h4 style={{ 
+                            fontSize: '18px', 
+                            fontWeight: 'bold', 
+                            color: '#d97706', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.1em',
+                            marginBottom: '16px', 
+                            borderBottom: '1px solid #e5e7eb',
+                            paddingBottom: '8px'
+                        }}>
                             {sec.title}
                         </h4>
-                        <div style={{ display: 'block' }}>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {sec.questions.map((q, qIdx) => {
                                 const globalIdx = sec.id * 5 + qIdx;
                                 const answer = answers[globalIdx];
-                                const optionLabel = options.find(o => o.val === answer)?.label || "N/A";
+                                const optionLabel = options.find(o => o.val === answer)?.label || 'N/A';
                                 const color = answer === 3 ? '#15803d' : answer === 2 ? '#b45309' : '#b91c1c';
                                 const bgColor = answer === 3 ? '#f0fdf4' : answer === 2 ? '#fffbeb' : '#fef2f2';
-
+                                const borderColor = answer === 3 ? '#bbf7d0' : answer === 2 ? '#fde68a' : '#fecaca';
                                 return (
-                                    <div key={q.id} style={{
-                                        display: 'table',
-                                        width: '100%',
+                                    <div key={q.id} style={{ 
+                                        display: 'flex', 
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        gap: '32px',
                                         backgroundColor: '#f9fafb',
-                                        padding: '12px',
-                                        borderRadius: '8px',
-                                        marginBottom: '10px'
+                                        padding: '16px',
+                                        borderRadius: '12px',
+                                        pageBreakInside: 'avoid'
                                     }}>
-                                        <div style={{ display: 'table-row' }}>
-                                            <div style={{ display: 'table-cell', fontSize: '13px', verticalAlign: 'top' }}>
-                                                <span style={{ fontWeight: 'bold', marginRight: '8px', color: '#9ca3af' }}>{qIdx + 1}.</span>
-                                                {q.text}
-                                            </div>
-                                            <div style={{ display: 'table-cell', width: '120px', textAlign: 'right', verticalAlign: 'middle' }}>
-                                                <span style={{
-                                                    fontSize: '11px',
-                                                    fontWeight: 'bold',
-                                                    textTransform: 'uppercase',
-                                                    padding: '4px 10px',
-                                                    backgroundColor: bgColor,
-                                                    color: color,
-                                                    borderRadius: '12px',
-                                                    border: `1px solid ${color}44`
-                                                }}>
-                                                    {optionLabel}
-                                                </span>
-                                            </div>
+                                        <p style={{ 
+                                            fontSize: '14px', 
+                                            fontWeight: '300',
+                                            lineHeight: '1.6',
+                                            flex: 1,
+                                            margin: 0,
+                                            color: '#374151'
+                                        }}>
+                                            <span style={{ fontWeight: 'bold', marginRight: '8px', color: '#9ca3af' }}>{qIdx + 1}.</span>
+                                            {q.text}
+                                        </p>
+                                        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                                            <span style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: '96px',
+                                                height: '28px',
+                                                fontSize: '10px',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                backgroundColor: bgColor,
+                                                color: color,
+                                                borderRadius: '9999px',
+                                                border: `1px solid ${borderColor}`,
+                                                lineHeight: '1'
+                                            }}>
+                                                <span style={{ position: 'relative', top: '-1.5px' }}>{optionLabel}</span>
+                                            </span>
                                         </div>
                                     </div>
                                 );
@@ -178,9 +205,159 @@ const ScorecardPDF = ({ userData, overallStatus, totalScore, sections, getSectio
                 ))}
             </div>
 
-            {/* Footer */}
-            <div style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #e5e7eb', textAlign: 'center', fontSize: '10px', color: '#9ca3af' }}>
-                © 2026 RE:ORG Organizational Diagnostic. All rights reserved.
+            {/* PAGE 3: Breakdown pt 2 */}
+            <div style={{ height: '1010px', boxSizing: 'border-box', paddingTop: '20px' }}>
+                {sections.slice(2, 4).map((sec) => (
+                    <div key={sec.id} style={{ marginBottom: '40px', pageBreakInside: 'avoid' }}>
+                        <h4 style={{ 
+                            fontSize: '18px', 
+                            fontWeight: 'bold', 
+                            color: '#d97706', 
+                            textTransform: 'uppercase', 
+                            letterSpacing: '0.1em',
+                            marginBottom: '16px', 
+                            borderBottom: '1px solid #e5e7eb',
+                            paddingBottom: '8px'
+                        }}>
+                            {sec.title}
+                        </h4>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {sec.questions.map((q, qIdx) => {
+                                const globalIdx = sec.id * 5 + qIdx;
+                                const answer = answers[globalIdx];
+                                const optionLabel = options.find(o => o.val === answer)?.label || 'N/A';
+                                const color = answer === 3 ? '#15803d' : answer === 2 ? '#b45309' : '#b91c1c';
+                                const bgColor = answer === 3 ? '#f0fdf4' : answer === 2 ? '#fffbeb' : '#fef2f2';
+                                const borderColor = answer === 3 ? '#bbf7d0' : answer === 2 ? '#fde68a' : '#fecaca';
+                                return (
+                                    <div key={q.id} style={{ 
+                                        display: 'flex', 
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        gap: '32px',
+                                        backgroundColor: '#f9fafb',
+                                        padding: '16px',
+                                        borderRadius: '12px',
+                                        pageBreakInside: 'avoid'
+                                    }}>
+                                        <p style={{ 
+                                            fontSize: '14px', 
+                                            fontWeight: '300',
+                                            lineHeight: '1.6',
+                                            flex: 1,
+                                            margin: 0,
+                                            color: '#374151'
+                                        }}>
+                                            <span style={{ fontWeight: 'bold', marginRight: '8px', color: '#9ca3af' }}>{qIdx + 1}.</span>
+                                            {q.text}
+                                        </p>
+                                        <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                                            <span style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                width: '96px',
+                                                height: '28px',
+                                                fontSize: '10px',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                backgroundColor: bgColor,
+                                                color: color,
+                                                borderRadius: '9999px',
+                                                border: `1px solid ${borderColor}`,
+                                                lineHeight: '1'
+                                            }}>
+                                                <span style={{ position: 'relative', top: '-1.5px' }}>{optionLabel}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* PAGE 4: Breakdown pt 3 & Footer */}
+            <div style={{ height: '1010px', boxSizing: 'border-box', paddingTop: '20px', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flex: 1 }}>
+                    {sections.slice(4).map((sec) => (
+                        <div key={sec.id} style={{ marginBottom: '40px', pageBreakInside: 'avoid' }}>
+                            <h4 style={{ 
+                                fontSize: '18px', 
+                                fontWeight: 'bold', 
+                                color: '#d97706', 
+                                textTransform: 'uppercase', 
+                                letterSpacing: '0.1em',
+                                marginBottom: '16px', 
+                                borderBottom: '1px solid #e5e7eb',
+                                paddingBottom: '8px'
+                            }}>
+                                {sec.title}
+                            </h4>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                {sec.questions.map((q, qIdx) => {
+                                    const globalIdx = sec.id * 5 + qIdx;
+                                    const answer = answers[globalIdx];
+                                    const optionLabel = options.find(o => o.val === answer)?.label || 'N/A';
+                                    const color = answer === 3 ? '#15803d' : answer === 2 ? '#b45309' : '#b91c1c';
+                                    const bgColor = answer === 3 ? '#f0fdf4' : answer === 2 ? '#fffbeb' : '#fef2f2';
+                                    const borderColor = answer === 3 ? '#bbf7d0' : answer === 2 ? '#fde68a' : '#fecaca';
+                                    return (
+                                        <div key={q.id} style={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            gap: '32px',
+                                            backgroundColor: '#f9fafb',
+                                            padding: '16px',
+                                            borderRadius: '12px',
+                                            pageBreakInside: 'avoid'
+                                        }}>
+                                            <p style={{ 
+                                                fontSize: '14px', 
+                                                fontWeight: '300',
+                                                lineHeight: '1.6',
+                                                flex: 1,
+                                                margin: 0,
+                                                color: '#374151'
+                                            }}>
+                                                <span style={{ fontWeight: 'bold', marginRight: '8px', color: '#9ca3af' }}>{qIdx + 1}.</span>
+                                                {q.text}
+                                            </p>
+                                            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                                                <span style={{
+                                                    display: 'inline-block',
+                                                    textAlign: 'center',
+                                                    width: '96px',
+                                                    paddingTop: '2px',
+                                                    paddingBottom: '6px',
+                                                    fontSize: '10px',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    backgroundColor: bgColor,
+                                                    color: color,
+                                                    borderRadius: '9999px',
+                                                    border: `1px solid ${borderColor}`,
+                                                    lineHeight: '1'
+                                                }}>
+                                                    {optionLabel}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Footer */}
+                <div style={{ paddingTop: '20px', borderTop: '1px solid #e5e7eb', textAlign: 'center', fontSize: '10px', color: '#9ca3af' }}>
+                    RE:ORG Diagnostic Profile • Generated automatically
+                </div>
             </div>
         </div>
     );

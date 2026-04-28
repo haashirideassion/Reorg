@@ -38,11 +38,11 @@ export function Navbar() {
                 <Link
                     to="/"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2 sm:gap-3 lg:gap-4 transition-opacity relative z-10"
+                    className="flex items-center gap-3 sm:gap-4 transition-opacity relative z-10 shrink-0"
                 >
-                    <img src="/sapienthr.png" alt="SapientHR Logo" className="h-5 sm:h-6 lg:h-8 object-contain" />
-                    <div className="h-4 sm:h-6 lg:h-8 w-px bg-gray-300"></div>
-                    <img src="/reorg-logo.svg" alt="RE:ORG Logo" className="h-5 sm:h-6 lg:h-8 object-contain" />
+                    <img src="/assets/reorg-logo.svg" alt="RE:ORG Logo" className="h-5 sm:h-6 lg:h-7 object-contain" />
+                    <span className="text-[10px] sm:text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">by</span>
+                    <img src="/assets/sapienthr.png" alt="SapientHR Logo" className="h-5 sm:h-6 lg:h-8 object-contain" />
                 </Link>
 
                 {/* Desktop Links */}

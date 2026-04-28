@@ -1,6 +1,5 @@
 <div align="center">
-  <img src="public/sapienthr.png" alt="SapientHR Logo" width="200"/>
-  <h1>RE:ORG Consulting</h1>
+  <h1>RE:ORG</h1>
   <p><strong>Organizational Structure Transformation Program</strong></p>
 </div>
 

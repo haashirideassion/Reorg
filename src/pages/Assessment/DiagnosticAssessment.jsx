@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Reveal } from '../../components/Reveal';
 import { Navbar } from '../../components/Navbar';
@@ -69,6 +70,7 @@ const sections = [
 ];
 
 export default function DiagnosticAssessment() {
+    const navigate = useNavigate();
     // Initialize state from sessionStorage
     const [answers, setAnswers] = useState(() => {
         const saved = sessionStorage.getItem('reorg_diagnostic_answers');
@@ -292,6 +294,8 @@ export default function DiagnosticAssessment() {
                         clonedWrapper.style.left = '0';
                         clonedWrapper.style.opacity = '1';
                         clonedWrapper.style.width = '794px';
+                        clonedWrapper.style.height = 'auto';
+                        clonedWrapper.style.overflow = 'visible';
                         clonedDoc.body.style.width = '794px';
                     }
                 }
@@ -300,21 +304,29 @@ export default function DiagnosticAssessment() {
             const imgData = canvas.toDataURL('image/jpeg', 0.98);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const imgWidth = pdfWidth;
-            const imgHeight = (canvas.height * pdfWidth) / canvas.width;
-
-            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-
-            // Handle multi-page if necessary
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            let heightLeft = imgHeight - pdfHeight;
-            let position = -pdfHeight;
+            const margin = 15;
+            const contentHeight = pdfHeight - (margin * 2);
+            
+            const imgWidth = pdfWidth;
+            const imgHeightInPdf = (canvas.height * pdfWidth) / canvas.width;
+            
+            let heightLeft = imgHeightInPdf;
+            let position = 0;
 
             while (heightLeft > 0) {
-                pdf.addPage();
-                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-                heightLeft -= pdfHeight;
-                position -= pdfHeight;
+                if (position !== 0) {
+                    pdf.addPage();
+                }
+                
+                pdf.addImage(imgData, 'JPEG', 0, margin - position, imgWidth, imgHeightInPdf);
+                
+                pdf.setFillColor(255, 255, 255);
+                pdf.rect(0, 0, pdfWidth, margin, 'F');
+                pdf.rect(0, pdfHeight - margin, pdfWidth, margin, 'F');
+                
+                heightLeft -= contentHeight;
+                position += contentHeight;
             }
 
             const safeName = userData.name ? userData.name.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'scorecard';
@@ -366,7 +378,10 @@ export default function DiagnosticAssessment() {
                                                     transition: 'all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
                                                 }}
                                             ></div>
-                                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-5xl font-bold">{totalScore}<span className="text-sm text-gray-400 font-light ml-1">/75</span></div>
+                                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-5xl font-bold flex items-baseline leading-none">
+                                                {totalScore}
+                                                <span className="text-sm text-gray-400 font-medium ml-1">/75</span>
+                                            </div>
                                         </div>
                                         <h2 className={cn("text-3xl md:text-4xl font-serif font-medium mb-1", overallStatus.color)}>{overallStatus.label}</h2>
                                         <p className="text-sm font-bold uppercase tracking-[0.3em] text-black/40 mb-4">{overallStatus.zone}</p>
@@ -412,31 +427,54 @@ export default function DiagnosticAssessment() {
                                     </div>
                                 </div>
 
-                                <div className="glass p-8 rounded-3xl shadow-lg border border-white/40">
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <BarChart3 className="text-amber-600" />
-                                        <h3 className="text-xl font-serif">The Clog Detector</h3>
-                                    </div>
-                                    <div className="space-y-4 text-left">
-                                        {sections.map((sec) => {
-                                            const score = getSectionScore(sec.id);
-                                            const status = getStatus(score);
-                                            return (
-                                                <div key={sec.id} className="flex items-center gap-4 bg-white/50 p-4 rounded-xl border border-gray-100">
-                                                    <div className={cn("w-3 h-12 rounded-full shrink-0 shadow-sm", status.label === 'Green' ? 'bg-green-500' : status.label === 'Amber' ? 'bg-amber-500' : 'bg-red-500')}></div>
-                                                    <div className="flex-1">
-                                                        <div className="flex justify-between items-center mb-1">
-                                                            <span className="font-bold text-sm tracking-tight">{sec.title}</span>
-                                                            <span className={cn("font-bold text-xs uppercase tracking-widest", status.color)}>{status.label}</span>
+                                <div className="glass p-8 rounded-[32px] shadow-lg border border-white/40 overflow-hidden relative group">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-3 mb-8">
+                                            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                                <BarChart3 className="text-amber-600 w-5 h-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-serif">The Clog Detector</h3>
+                                                <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Sectional Performance</p>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-6 text-left">
+                                            {sections.map((sec) => {
+                                                const score = getSectionScore(sec.id);
+                                                const status = getStatus(score);
+                                                const colorClass = status.label === 'Green' ? 'bg-green-500' : status.label === 'Amber' ? 'bg-amber-500' : 'bg-red-500';
+                                                
+                                                return (
+                                                    <motion.div 
+                                                        key={sec.id} 
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        whileInView={{ opacity: 1, x: 0 }}
+                                                        viewport={{ once: true }}
+                                                        className="space-y-2"
+                                                    >
+                                                        <div className="flex justify-between items-end mb-1">
+                                                            <span className="font-bold text-[11px] tracking-tight text-gray-600 uppercase">{sec.title}</span>
+                                                            <div className="text-right">
+                                                                <span className={cn("font-black text-[9px] uppercase tracking-tighter block", status.color)}>{status.label}</span>
+                                                                <span className="text-base font-serif">{score}/15</span>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-xs text-gray-400 font-light">{status.sig}</span>
-                                                            <span className="text-sm font-bold">{score}/15</span>
+                                                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                                                            <motion.div
+                                                                initial={{ width: 0 }}
+                                                                whileInView={{ width: `${(score / 15) * 100}%` }}
+                                                                viewport={{ once: true }}
+                                                                transition={{ duration: 1.2, ease: "circOut" }}
+                                                                className={cn("h-full rounded-full relative", colorClass)}
+                                                            >
+                                                                <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.2)_50%,transparent_100%)] animate-shimmer" />
+                                                            </motion.div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -453,17 +491,19 @@ export default function DiagnosticAssessment() {
                                                 const answer = answers[globalIdx];
                                                 const optionLabel = options.find(o => o.val === answer)?.label || "N/A";
                                                 return (
-                                                    <div key={q.id} className="flex justify-between items-start gap-8 bg-gray-50 p-4 rounded-xl">
+                                                    <div key={q.id} className="flex justify-between items-center gap-8 bg-gray-50 p-4 rounded-xl">
                                                         <p className="text-sm font-light leading-relaxed flex-1">
                                                             <span className="font-bold mr-2 text-gray-400">{qIdx + 1}.</span>
                                                             {q.text}
                                                         </p>
-                                                        <span className={cn(
-                                                            "text-xs font-bold uppercase px-3 py-1 rounded-full shrink-0",
-                                                            answer === 3 ? "bg-green-100 text-green-700" : answer === 2 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"
-                                                        )}>
-                                                            {optionLabel}
-                                                        </span>
+                                                        <div className="flex items-center shrink-0">
+                                                            <span className={cn(
+                                                                "text-[10px] font-bold uppercase w-24 h-7 flex items-center justify-center rounded-full leading-none border",
+                                                                answer === 3 ? "bg-green-50 text-green-700 border-green-200" : answer === 2 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-red-50 text-red-700 border-red-200"
+                                                            )}>
+                                                                <span className="relative bottom-[1.5px]">{optionLabel}</span>
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 );
                                             })}
@@ -502,7 +542,7 @@ export default function DiagnosticAssessment() {
                                 <RefreshCw className="w-4 h-4" /> Start New Assessment
                             </button>
                             <button
-                                onClick={() => window.location.href = '/contact'}
+                                onClick={() => navigate('/contact')}
                                 className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-amber-600 text-white font-bold uppercase tracking-widest text-sm shadow-xl hover:bg-amber-700 transition-colors rounded-full"
                             >
                                 Discuss Your Results
@@ -511,7 +551,7 @@ export default function DiagnosticAssessment() {
                     </div>
 
                     {/* Hidden PDF Template */}
-                    <div id="diagnostic-pdf-wrapper" style={{ position: 'absolute', left: '-9999px', top: '0', opacity: 0 }}>
+                    <div id="diagnostic-pdf-wrapper" style={{ position: 'absolute', left: '-9999px', top: '0', pointerEvents: 'none', width: '794px', zIndex: -1 }}>
                         <div ref={pdfRef}>
                             <ScorecardPDF
                                 userData={userData}
