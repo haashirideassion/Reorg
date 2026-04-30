@@ -33,10 +33,12 @@ export function Footer({ hideRebirth }) {
 
 
                 <div className={`pt-12 flex flex-col md:flex-row items-center justify-between text-gray-500 ${!hideRebirth ? "mt-40 border-t border-gray-200" : ""}`}>
-                    <Link to="/" className="flex items-center justify-center md:justify-start gap-4 mb-6 md:mb-0 transition-opacity">
+                    <Link to="/" className="flex flex-col items-end mb-6 md:mb-0 transition-opacity">
                         <img src="/assets/reorg-logo.svg" alt="RE:ORG Logo" className="h-5 sm:h-6 object-contain" />
-                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-1">by</span>
-                        <img src="/assets/sapienthr.png" alt="SapientHR Logo" className="h-5 sm:h-7 object-contain" />
+                        <div className="flex items-center gap-1.5 mt-1 pr-1">
+                            <span className="text-[8px] sm:text-[9px] text-gray-400 font-medium uppercase tracking-widest leading-none">by</span>
+                            <img src="/assets/sapienthr.png" alt="SapientHR Logo" className="h-3 sm:h-3.5 object-contain" />
+                        </div>
                     </Link>
 
                     <div className="flex gap-8 mb-6 md:mb-0 text-sm font-medium">

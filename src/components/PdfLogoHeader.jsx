@@ -27,19 +27,25 @@ const PdfLogoHeader = ({ title, name }) => (
         <table style={{ margin: '0 auto 15px auto', borderCollapse: 'collapse' }}>
             <tbody>
                 <tr>
-                    <td style={{ verticalAlign: 'middle', paddingRight: '12px' }}>
-                        <ReorgLogoSVG />
-                    </td>
-                    <td style={{ verticalAlign: 'middle', paddingRight: '12px', fontSize: '10px', color: '#9ca3af', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>
-                        BY
-                    </td>
                     <td style={{ verticalAlign: 'middle' }}>
-                        <img
-                            src="/assets/sapienthr.png"
-                            alt="SapientHR"
-                            style={{ width: '90px', height: '26px', objectFit: 'contain', display: 'block' }}
-                            crossOrigin="anonymous"
-                        />
+                        <ReorgLogoSVG />
+                        <table style={{ borderCollapse: 'collapse', float: 'right', marginTop: '4px', marginRight: '4px' }}>
+                            <tbody>
+                                <tr>
+                                    <td style={{ verticalAlign: 'middle', paddingRight: '6px', fontSize: '8px', color: '#9ca3af', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1 }}>
+                                        BY
+                                    </td>
+                                    <td style={{ verticalAlign: 'middle' }}>
+                                        <img
+                                            src="/assets/sapienthr.png"
+                                            alt="SapientHR"
+                                            style={{ height: '12px', width: 'auto', objectFit: 'contain', display: 'block' }}
+                                            crossOrigin="anonymous"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </td>
                 </tr>
             </tbody>

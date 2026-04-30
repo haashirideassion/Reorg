@@ -33,8 +33,8 @@ export default function Landing() {
             <div className="fixed inset-0 noise-bg z-0 pointer-events-none"></div>
             <div className="relative">
                 <Navbar />
-                <Hero />
                 <Problem />
+                <Hero />
                 <Solution />
                 <Advantage />
                 <Diagnostic />

@@ -18,15 +18,6 @@ export function Readiness() {
                         If the answer is yes, you are ready for a RE:VAMP.
                     </p>
 
-                    <div className="pt-4 text-center">
-                        <Link
-                            to="/assessment"
-                            className="inline-flex items-center px-10 py-5 btn-border-flow text-black font-bold tracking-wide uppercase text-sm shadow-xl transition-all duration-300"
-                        >
-                            Take RE:ORG Readiness Assessment
-                            <ArrowRight className="w-5 h-5 ml-2" />
-                        </Link>
-                    </div>
                 </div>
             </Reveal>
         </section>
