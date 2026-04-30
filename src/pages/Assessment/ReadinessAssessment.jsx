@@ -484,7 +484,7 @@ export default function ReadinessAssessment() {
                                 <Reveal>
                                     <h3 className="text-3xl font-serif text-center mb-8">Organizational Breakdown</h3>
                                 </Reveal>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="grid grid-cols-1 gap-8">
                                     {sections.map((section, idx) => (
                                         <motion.div 
                                             key={idx} 
@@ -495,47 +495,91 @@ export default function ReadinessAssessment() {
                                             className="group glass p-8 rounded-[32px] relative overflow-hidden hover:shadow-2xl transition-all duration-500 border border-white/40"
                                         >
                                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                            <div className="relative z-10 h-full flex flex-col">
-                                                <div className="flex flex-col gap-1 mb-6">
-                                                    <div className="flex justify-between items-center">
-                                                        <h4 className="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-500 leading-tight pr-4">{section.title}</h4>
-                                                        <span className="text-3xl font-serif font-light shrink-0">{Math.round(readiness.sectionScores[idx])}%</span>
+                                            <div className="relative z-10">
+                                                {/* Section header row */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                                    <div>
+                                                        <h4 className="text-sm font-bold uppercase tracking-[0.15em] text-gray-700 leading-tight">{section.title}</h4>
+                                                        <div className="flex items-center gap-2 mt-2">
+                                                            {readiness.sectionScores[idx] > 60 ? (
+                                                                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                                                            ) : readiness.sectionScores[idx] > 30 ? (
+                                                                <span className="w-2 h-2 rounded-full bg-amber-500" />
+                                                            ) : (
+                                                                <span className="w-2 h-2 rounded-full bg-green-500" />
+                                                            )}
+                                                            <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">
+                                                                {readiness.sectionScores[idx] > 60 ? "Critical Resistance" :
+                                                                    readiness.sectionScores[idx] > 30 ? "Transition Strain" : "Stable Flow"}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        {readiness.sectionScores[idx] > 60 ? (
-                                                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                                                        ) : readiness.sectionScores[idx] > 30 ? (
-                                                            <span className="w-2 h-2 rounded-full bg-amber-500" />
-                                                        ) : (
-                                                            <span className="w-2 h-2 rounded-full bg-green-500" />
-                                                        )}
-                                                        <span className="text-[9px] font-black uppercase tracking-wider text-gray-400">
-                                                            {readiness.sectionScores[idx] > 60 ? "Critical Resistance" :
-                                                                readiness.sectionScores[idx] > 30 ? "Transition Strain" : "Stable Flow"}
-                                                        </span>
+                                                    <div className="flex items-center gap-4 shrink-0">
+                                                        <div className="w-32 sm:w-48">
+                                                            <div className="relative h-2.5 w-full bg-gray-100/80 rounded-full overflow-hidden backdrop-blur-sm shadow-inner">
+                                                                <motion.div
+                                                                    initial={{ width: 0 }}
+                                                                    whileInView={{ width: `${readiness.sectionScores[idx]}%` }}
+                                                                    viewport={{ once: true }}
+                                                                    transition={{ duration: 1.5, ease: "circOut" }}
+                                                                    className={cn(
+                                                                        "h-full rounded-full relative",
+                                                                        readiness.sectionScores[idx] > 60 ? "bg-red-500" :
+                                                                            readiness.sectionScores[idx] > 30 ? "bg-amber-500" : "bg-green-500"
+                                                                    )}
+                                                                >
+                                                                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer" />
+                                                                </motion.div>
+                                                            </div>
+                                                        </div>
+                                                        <span className="text-3xl font-serif font-light">{Math.round(readiness.sectionScores[idx])}%</span>
                                                     </div>
-                                                </div>
-                                                
-                                                <div className="relative h-3 w-full bg-gray-100/80 rounded-full overflow-hidden mb-6 backdrop-blur-sm shadow-inner">
-                                                    <motion.div
-                                                        initial={{ width: 0 }}
-                                                        whileInView={{ width: `${readiness.sectionScores[idx]}%` }}
-                                                        viewport={{ once: true }}
-                                                        transition={{ duration: 1.5, ease: "circOut" }}
-                                                        className={cn(
-                                                            "h-full rounded-full relative",
-                                                            readiness.sectionScores[idx] > 60 ? "bg-red-500" :
-                                                                readiness.sectionScores[idx] > 30 ? "bg-amber-500" : "bg-green-500"
-                                                        )}
-                                                    >
-                                                        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.3)_50%,transparent_100%)] animate-shimmer" />
-                                                    </motion.div>
                                                 </div>
 
-                                                <p className="text-[11px] text-gray-500 leading-relaxed font-light italic mt-auto">
+                                                <p className="text-[11px] text-gray-400 leading-relaxed font-light italic mb-6 border-b border-gray-100 pb-4">
                                                     {readiness.sectionScores[idx] > 60 ? "Deep organizational friction detected. Legacy patterns are stifling progress." :
                                                         readiness.sectionScores[idx] > 30 ? "Moderate signs of structural tension. Opportunities for optimization exist." : "Operational fluidity is high. Structure supports strategic execution."}
                                                 </p>
+
+                                                {/* Per-question answer breakdown */}
+                                                <div className="flex flex-col">
+                                                    {section.questions.map((q, qIdx) => {
+                                                        const sectionStartIdx = sections.slice(0, idx).reduce((acc, s) => acc + s.questions.length, 0);
+                                                        const globalIdx = sectionStartIdx + qIdx;
+                                                        const answerVal = answers[globalIdx];
+                                                        const selectedOpt = q.options.find(o => o.val === answerVal);
+                                                        const answerColor = selectedOpt?.color;
+                                                        const pillClasses = {
+                                                            green: "bg-green-50 text-green-700 border-green-200",
+                                                            yellow: "bg-amber-50 text-amber-700 border-amber-200",
+                                                            red: "bg-red-50 text-red-700 border-red-200",
+                                                        };
+                                                        return (
+                                                            <div key={q.id} className="flex items-center justify-between gap-6 py-4 border-b border-gray-100/80 last:border-0">
+                                                                <div className="flex items-center gap-4 flex-1 min-w-0">
+                                                                    <span className="shrink-0 w-7 h-7 rounded-lg bg-gray-100 text-gray-400 text-xs font-bold flex items-center justify-center">
+                                                                        {String(qIdx + 1).padStart(2, '0')}
+                                                                    </span>
+                                                                    <p className="text-[13px] text-gray-600 font-light leading-snug">
+                                                                        {q.text}
+                                                                    </p>
+                                                                </div>
+                                                                {selectedOpt ? (
+                                                                    <span className={cn(
+                                                                        "shrink-0 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border whitespace-nowrap",
+                                                                        pillClasses[answerColor] || "bg-gray-50 text-gray-500 border-gray-200"
+                                                                    )}>
+                                                                        {selectedOpt.label}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="shrink-0 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border bg-gray-50 text-gray-400 border-gray-200">
+                                                                        N/A
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
                                         </motion.div>
                                     ))}
@@ -617,13 +661,11 @@ export default function ReadinessAssessment() {
                                 }}
                                 totalScore={readiness.totalScore}
                                 sections={sections}
-                                getSectionScore={(id) => readiness.sectionScores[id] * 0.15} // Simplified back-convert for the visual bar
-                                getStatus={() => ({ label: 'N/A' })}
-                                options={sections[0].questions[0].options} // Pick one as reference
+                                getSectionScore={(id) => readiness.sectionScores[id] * 0.15}
                                 answers={answers}
                                 radarPoints={sections.map((_, i) => {
                                     const cx = 150, cy = 150, radius = 90;
-                                    const angle = (Math.PI / 2) - (2 * Math.PI * i / 7);
+                                    const angle = (Math.PI / 2) - (2 * Math.PI * i / sections.length);
                                     const val = (readiness.sectionScores[i] / 100);
                                     const x = cx + val * radius * Math.cos(angle);
                                     const y = cy - val * radius * Math.sin(angle);
