@@ -9,7 +9,7 @@ import { cn } from '../../utils/cn';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import ScorecardPDF from '../../components/ScorecardPDF';
-import { supabase } from '../../utils/supabaseClient';
+import { submitToGoogleSheet } from '../../utils/googleSheet';
 
 const sections = [
     {
@@ -139,19 +139,16 @@ export default function DiagnosticAssessment() {
 
         setIsSaving(true);
         try {
-            const { error } = await supabase
-                .from('diagnostic_submissions')
-                .insert([
-                    {
-                        name: userData.name,
-                        email: userData.email,
-                        total_score: totalScore,
-                        status: overallStatus.label,
-                        answers: answers
-                    }
-                ]);
+            const result = await submitToGoogleSheet({
+                project: 'Reorg_Diagnostic',
+                name: userData.name,
+                email: userData.email,
+                total_score: totalScore,
+                status: overallStatus.label,
+                answers: JSON.stringify(answers)
+            });
 
-            if (error) throw error;
+            if (result.error) throw new Error(result.error);
             setShowResult(true);
         } catch (error) {
             console.error('Error saving diagnostic result:', error);

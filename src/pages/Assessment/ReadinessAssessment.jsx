@@ -9,7 +9,7 @@ import { cn } from '../../utils/cn';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import ReadinessScorecardPDF from '../../components/ReadinessScorecardPDF';
-import { supabase } from '../../utils/supabaseClient';
+import { submitToGoogleSheet } from '../../utils/googleSheet';
 
 const sections = [
     {
@@ -227,18 +227,15 @@ export default function ReadinessAssessment() {
 
         setIsSaving(true);
         try {
-            const { error } = await supabase
-                .from('readiness_submissions')
-                .insert([
-                    {
-                        name: userData.name,
-                        email: userData.email,
-                        overall_status: readiness.status,
-                        answers: answers
-                    }
-                ]);
+            const result = await submitToGoogleSheet({
+                project: 'Reorg_Readiness',
+                name: userData.name,
+                email: userData.email,
+                overall_status: readiness.status,
+                answers: JSON.stringify(answers)
+            });
 
-            if (error) throw error;
+            if (result.error) throw new Error(result.error);
             setShowResult(true);
         } catch (error) {
             console.error('Error saving readiness result:', error);

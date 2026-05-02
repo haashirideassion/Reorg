@@ -5,7 +5,7 @@ import { Reveal } from '../../components/Reveal';
 import { Link } from 'react-router-dom';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
-import { supabase } from '../../utils/supabaseClient';
+import { submitToGoogleSheet } from '../../utils/googleSheet';
 import { cn } from '../../utils/cn';
 
 export default function Contact() {
@@ -27,18 +27,15 @@ export default function Contact() {
         setErrorMessage('');
 
         try {
-            const { error } = await supabase
-                .from('contact_inquiries')
-                .insert([
-                    {
-                        first_name: formState.firstName,
-                        last_name: formState.lastName,
-                        email: formState.email,
-                        message: formState.message
-                    }
-                ]);
+            const result = await submitToGoogleSheet({
+                project: 'Reorg_Contact',
+                first_name: formState.firstName,
+                last_name: formState.lastName,
+                email: formState.email,
+                message: formState.message
+            });
 
-            if (error) throw error;
+            if (result.error) throw new Error(result.error);
 
             setSubmitStatus('success');
             setFormState({ firstName: '', lastName: '', email: '', message: '' });
